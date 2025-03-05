@@ -1,0 +1,12 @@
+services:
+  wahoo-release-tracker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./versions.db:/home/node/app/versions.db
+      - ./versions.rss:/home/node/app/versions.rss
+    container_name: wahoo-release-tracker
+    env_file:
+      - .env
+    restart: unless-stopped
