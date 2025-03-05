@@ -63,12 +63,12 @@ def fetch_version_data(url):
         return None
 
 def send_pushover_alert(device, version, release_type):
-    """Send a Pushover alert for a new firmware version."""
+    """Send a Pushover alert for a new BoltApp version."""
     if not PUSHOVER_USER_KEY or not PUSHOVER_API_TOKEN:
         print("Pushover user key or API token not set.")
         return
 
-    message = f"New firmware version for {device}: {version} ({release_type})"
+    message = f"New BoltApp update for {device}: {version} ({release_type})"
     data = {
         "token": PUSHOVER_API_TOKEN,
         "user": PUSHOVER_USER_KEY,
@@ -99,14 +99,14 @@ def login_to_bluesky():
         return None
 
 def post_to_bluesky(device, version, release_type):
-    """Post a new firmware version to BlueSky using the atproto package."""
+    """Post a new BoltApp version to BlueSky"""
     global client
     if client is None:
         client = login_to_bluesky()
         if client is None:
             return
 
-    message = f"New firmware version for {device}: {version} ({release_type})"
+    message = f"New BoltApp version found for {device}: {version} ({release_type})"
     
     try:
         
