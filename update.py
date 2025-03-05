@@ -6,7 +6,7 @@ import xml.etree.ElementTree as ET
 import pytz
 from datetime import datetime
 import os
-from atproto import Client
+from atproto import Client, models
 
 # Mapping of URLs to device names
 URLS = {
@@ -103,10 +103,14 @@ def post_to_bluesky(device, version, release_type):
         if client is None:
             return
 
-    message = f"New firmware version for {device}: {version} ({release_type})"
+    message = f"New firmware version for {device}: {version} ({release_type}) \n #Wahoo #FirmwareUpdate"
     
     try:
-        client.post.create(text=message)
+        # Create rich text facets
+        facets = models.Facets()
+        facets.add_text(message)
+        
+        client.post.create(text=message, facets=facets)
         print("Posted to BlueSky.")
     except Exception as e:
         print(f"Error posting to BlueSky: {e}")
@@ -114,7 +118,7 @@ def post_to_bluesky(device, version, release_type):
         client = login_to_bluesky()
         if client:
             try:
-                client.post.create(text=message)
+                client.post.create(text=message, facets=facets)
                 print("Posted to BlueSky after re-login.")
             except Exception as e:
                 print(f"Error posting to BlueSky after re-login: {e}")
@@ -136,7 +140,7 @@ def store_version(device, version, apk_url, release_type):
             
         if BLUESKY_USERNAME and BLUESKY_APP_PASSWORD:    
             post_to_bluesky(device, version, release_type)
-            
+
     except sqlite3.IntegrityError:
         print(f"Version {version} ({release_type}) for {device} already recorded.")
     finally:
