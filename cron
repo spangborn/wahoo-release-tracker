@@ -1,0 +1,1 @@
+* * * * *  cd /app && python3 update.py >>/tmp/out.log 2>/tmp/err.log
