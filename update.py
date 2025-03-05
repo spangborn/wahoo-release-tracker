@@ -102,7 +102,7 @@ def main():
         data = fetch_version_data(url)
 
         #   The json data should have the following format:
-        #{
+        # {
         #   "std-version": 17031,
         #   "std-url": "https://wahoo-cloud-eu.wahooligan.com/firmware/elemnt/boltapp/17031/BoltApp.apk",
         #   "beta-version": 17041,
