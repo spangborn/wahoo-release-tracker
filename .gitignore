@@ -1,3 +1,4 @@
 versions.db
 versions.rss
 .env
+.DS_Store
