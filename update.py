@@ -29,7 +29,6 @@ RSS_FILE = "versions.rss"
 
 PUSHOVER_USER_KEY = os.getenv('PUSHOVER_USER_KEY')
 PUSHOVER_API_TOKEN = os.getenv('PUSHOVER_API_TOKEN')
-BLUESKY_API_URL = "https://bsky.social/api/v1/posts"
 BLUESKY_USERNAME = os.getenv('BLUESKY_USERNAME')
 BLUESKY_APP_PASSWORD = os.getenv('BLUESKY_APP_PASSWORD')
 
@@ -184,16 +183,6 @@ def main():
     new_version_recorded = False
     for device, url in URLS.items():
         data = fetch_version_data(url)
-
-        #   The json data should have the following format:
-        # {
-        #   "std-version": 17031,
-        #   "std-url": "https://wahoo-cloud-eu.wahooligan.com/firmware/elemnt/boltapp/17031/BoltApp.apk",
-        #   "beta-version": 17041,
-        #   "beta-url": "https://wahoo-cloud-eu.wahooligan.com/firmware/elemnt/boltapp/17041/BoltApp.apk",
-        #   "alpha-version": 17403,
-        #   "alpha-url": "https://wahoo-cloud-eu.wahooligan.com/firmware/elemnt/boltapp/17403/BoltApp.apk"
-        # }
 
         if data:
             for release_type in ["std", "beta", "alpha"]:
