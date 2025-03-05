@@ -6,6 +6,7 @@ import xml.etree.ElementTree as ET
 import pytz
 from datetime import datetime
 import os
+from atproto import Client
 
 # Mapping of URLs to device names
 URLS = {
@@ -24,6 +25,11 @@ RSS_FILE = "versions.rss"
 
 PUSHOVER_USER_KEY = os.getenv('PUSHOVER_USER_KEY')
 PUSHOVER_API_TOKEN = os.getenv('PUSHOVER_API_TOKEN')
+BLUESKY_API_URL = "https://bsky.social/api/v1/posts"
+BLUESKY_USERNAME = os.getenv('BLUESKY_USERNAME')
+BLUESKY_APP_PASSWORD = os.getenv('BLUESKY_APP_PASSWORD')
+
+client = None
 
 def init_db():
     """Initialize the SQLite database and create the necessary table."""
@@ -73,6 +79,46 @@ def send_pushover_alert(device, version, release_type):
     except requests.RequestException as e:
         print(f"Error sending Pushover alert: {e}")
 
+def login_to_bluesky():
+    """Login to BlueSky and return the client."""
+    global client
+    if not BLUESKY_USERNAME or not BLUESKY_APP_PASSWORD:
+        print("BlueSky username or app password not set.")
+        return None
+
+    try:
+        client = Client()
+        client.login(BLUESKY_USERNAME, BLUESKY_APP_PASSWORD)
+        print("Logged into BlueSky.")
+        return client
+    except Exception as e:
+        print(f"Error logging into BlueSky: {e}")
+        return None
+
+def post_to_bluesky(device, version, release_type):
+    """Post a new firmware version to BlueSky using the atproto package."""
+    global client
+    if client is None:
+        client = login_to_bluesky()
+        if client is None:
+            return
+
+    message = f"New firmware version for {device}: {version} ({release_type})"
+    
+    try:
+        client.post.create(text=message)
+        print("Posted to BlueSky.")
+    except Exception as e:
+        print(f"Error posting to BlueSky: {e}")
+        # Attempt to re-login and post again
+        client = login_to_bluesky()
+        if client:
+            try:
+                client.post.create(text=message)
+                print("Posted to BlueSky after re-login.")
+            except Exception as e:
+                print(f"Error posting to BlueSky after re-login: {e}")
+
 def store_version(device, version, apk_url, release_type):
     """Store the version in the database if it's new."""
     conn = sqlite3.connect(DB_FILE)
@@ -84,7 +130,13 @@ def store_version(device, version, apk_url, release_type):
         )
         conn.commit()
         print(f"New version recorded: {device} - {version} ({release_type})")
-        send_pushover_alert(device, version, release_type)
+        
+        if PUSHOVER_USER_KEY and PUSHOVER_API_TOKEN:
+            send_pushover_alert(device, version, release_type)
+            
+        if BLUESKY_USERNAME and BLUESKY_APP_PASSWORD:    
+            post_to_bluesky(device, version, release_type)
+            
     except sqlite3.IntegrityError:
         print(f"Version {version} ({release_type}) for {device} already recorded.")
     finally:
