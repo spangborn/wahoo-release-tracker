@@ -9,8 +9,11 @@ An RSS feed is also generated for tracking purposes.
 The best practice is using a virtualenv (venv) to reduce impacts on the system python modules.
 
 `python3 -m venv venv`
+
 `source venv/bin/activate`
+
 `pip install -r requirements.txt`
+
 `python3 update.py`
 
 ## Output
