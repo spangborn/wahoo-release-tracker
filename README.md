@@ -6,16 +6,31 @@ An RSS feed is also generated for tracking purposes.
 
 ## How to run
 
-The best practice is using a virtualenv (venv) to reduce impacts on the system python modules.
+The best practice is using a virtualenv (venv) to reduce impacts on the system python modules when developing locally, or utilize Docker.
 
-`python3 -m venv venv`
+```sh
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+python3 update.py
+```
 
-`source venv/bin/activate`
+## Docker
 
-`pip install -r requirements.txt`
+You can also run the application using Docker.
 
-`python3 update.py`
+### Build the Docker image
+
+```sh
+docker build -t wahoo-release-tracker .
+```
+
+### Run the Docker container
+
+```sh
+docker run -v $(pwd)/data:/app/data wahoo-release-tracker
+```
 
 ## Output
 
-The script will produce a versions.db sqlite3 database and a versions.rss file
+The script will produce a `versions.db` sqlite3 database and a `versions.rss` file.
