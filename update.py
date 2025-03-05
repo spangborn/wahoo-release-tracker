@@ -7,6 +7,10 @@ import pytz
 from datetime import datetime
 import os
 from atproto import Client, models
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 # Mapping of URLs to device names
 URLS = {
@@ -103,14 +107,11 @@ def post_to_bluesky(device, version, release_type):
         if client is None:
             return
 
-    message = f"New firmware version for {device}: {version} ({release_type}) \n #Wahoo #FirmwareUpdate"
+    message = f"New firmware version for {device}: {version} ({release_type})"
     
     try:
-        # Create rich text facets
-        facets = models.Facets()
-        facets.add_text(message)
         
-        client.post.create(text=message, facets=facets)
+        client.send_post(text=message)
         print("Posted to BlueSky.")
     except Exception as e:
         print(f"Error posting to BlueSky: {e}")
@@ -118,7 +119,7 @@ def post_to_bluesky(device, version, release_type):
         client = login_to_bluesky()
         if client:
             try:
-                client.post.create(text=message, facets=facets)
+                client.send_post(text=message)
                 print("Posted to BlueSky after re-login.")
             except Exception as e:
                 print(f"Error posting to BlueSky after re-login: {e}")
