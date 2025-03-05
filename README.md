@@ -28,7 +28,7 @@ docker build -t wahoo-release-tracker .
 ### Run the Docker container
 
 ```sh
-docker run -v $(pwd)/data:/app/data wahoo-release-tracker
+docker run -v wahoo-release-tracker
 ```
 
 ## Output
